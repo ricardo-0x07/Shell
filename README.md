@@ -61,6 +61,7 @@
 		ii. Run "cd /var/www" and run "git clone --depth 1 https://github.com/ricardo-0x07/catalog.git"
 		iii. Run "sudo sh /var/www/catalog/pg_config.sh" to install project dependencies.
 		iii. Run "sudo nano /var/www/html/myapp.wsgi" to insert the following and save and exit:
+		
 				import sys
 				import site
 				import logging
