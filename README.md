@@ -3,25 +3,77 @@
 
 2. The main technologies used in this project are Python, Flask, Sqlachemy, oauth2 and sqlite.
 
-3. Skills gained: 
-  a. developed a deep understanding of exactly what web applications are doing, how they are hosted, and the interactions between multiple systems. 
-  b. turning a brand-new, bare bones, Linux server into the secure and efficient web application host your applications need.
-  c. to install and configure a web and database server and actually host a web application.
-
-
 # Installation and Running
 
 1. IP addreess: 35.163.150.155 ssh port: 2200
 2. The hosted application is publically available at: "http://35.163.150.155/catalog/#"
 3. Summary of software installed:
-	- finger
-	- apache2
-	- libapache2-mod-wsgi
-	- postgresql
-	- git
-	- python-pip
-	- flask
-	- and all those listed in the "/var/www/catalog/pg_config.sh" file by running: 'sudo sh /var/www/catalog/pg_config.sh'
+
+	2. Create a new user named grader and grant this user sudo permissions.:
+		i. Run "sudo adduser grader" to create grader.
+		ii. Run "sudo nano /etc/sudoers.d/grader " to create sudoer file for grader and insert the following "grader ALL=(ALL) NOPASSWD:ALL "
+
+	3. Update all currently installed packages.:
+		i. Run "sudo apt-get update"
+		ii. Run "sudo apt-get upgrade"
+		iii. Run "sudo apt-get install finger".
+	4. Configure the local timezone to UTC.
+		i. Run "sudo dpkg-reconfigure tzdata"
+	 Install the finger package:
+		i. Run "sudo apt-get install finger" scroll to the bottom of the Continents list and select "None of the above" in the second list, select "UTC" (Source: http://askubuntu.com/questions/138423/how-do-i-change-my-timezone-to-utc-gmt)
+	5. Changed ssh port form 22 to 2200 with the following steps (source: https://help.ubuntu.com/community/SSH/OpenSSH/Configuring)
+		i. Run "sudo nano /etc/ssh/sshd_config" and changed "Port 22 " to "Port 2200 ".
+		ii. Run "sudo restart ssh"
+	6. Configure the Uncomplicated Firewall (UFW) to only allow incoming connections for SSH (port 2200), HTTP (port 80), and NTP (port 123)
+		i. Run " sudo ufw status" to check the status of the firewall to ensure its disabled.
+		ii. Run "sudo ufw default deny incoming" to deny all incoming connections.
+		iii. Run "sudo ufw default allow outgoing" to allow all outgoing connections.
+		iv. Run "sudo ufw allow ssh" to enable ssh.
+		v. Run "sudo ufw allow 2200/tcp" enable port 2200.
+		vi. Run "sudo nano /etc/ssh/sshd_config" and changed "Port 22 " to "Port 2200 " Changed ssh port form 22 to 2200 with the following steps (source: https://help.ubuntu.com/community/SSH/OpenSSH/Configuring). 
+		vii. Run "sudo restart ssh"
+		viii. Run "sudo ufw allow ntp"
+		ix. Run "sudo ufw allow www"
+		x. Run "sudo ufw enable" to enable firewal changes.
+		xi. Run "sudo ufw status" to confirm changes made.
+
+	7. Install and configure Apache to serve a Python mod_wsgi application.
+		i. Run "sudo apt-get install apache2"
+		ii. Run "sudo apt-get install libapache2-mod-wsgi"
+		iii. Run "sudo nano /etc/apache2/sites-enabled/000-default.conf" edit the configuration. For now, add the following line at the end of the <VirtualHost *:80> block, right before the closing </VirtualHost> line:
+	        WSGIDaemonProcess application  python-path=/usr/local/lib/python2.7/site-packages
+	        WSGIScriptAlias / /var/www/html/myapp.wsgi
+	    <directory /var/www/catalog>
+	        WSGIProcessGroup application
+	        WSGIApplicationGroup %{GLOBAL}
+	        WSGIScriptReloading On
+	        Order deny,allow
+	        Allow from all
+	    </directory>		
+		iv. Run "sudo apache2ctl restart".
+
+	8. Install and configure PostgreSQL:
+		i. Run "sudo apt-get install postgresql".
+		ii. To create a database with a user that have full rights on the database, use the following commands (Source: https://help.ubuntu.com/community/PostgreSQL): "sudo -u postgres createuser -D -A -P catalog" enter a password for the user and  "sudo -u postgres createdb -O catalog catalog"
+	
+	9. Install git, clone and set up your Catalog App project (from your GitHub repository from earlier in the Nanodegree program) so that it functions correctly when visiting your server’s IP address in a browser. Remember to set this up appropriately so that your .git directory is not publicly accessible via a browser!
+		i. Run "sudo apt-get install git" 
+		ii. Run "cd /var/www" and run "git clone --depth 1 https://github.com/ricardo-0x07/catalog.git"
+		iii. Run "sudo sh /var/www/catalog/pg_config.sh" to install project dependencies.
+		iii. Run "sudo nano /var/www/html/myapp.wsgi" to insert the following and save and exit:
+				import sys
+				import site
+				import logging
+
+				logging.basicConfig(stream=sys.stderr)
+
+				site.addsitedir('/usr/local/lib/python2.7/site-packages')
+
+				sys.path.insert(0, '/var/www/catalog/')
+
+				from application import app as application
+				application.secret_key = 'super_secret_key'
+ 
 4. Contents of the ~/.ssh/udacity_key.rsa:
 -----BEGIN RSA PRIVATE KEY-----
 MIIEogIBAAKCAQEApxXPENf9zhCX4OMZ5EF6baRcASTqVWHJ+82JhsaHGM1Nw0Q4
@@ -58,30 +110,6 @@ Tf7+hQHslnnTKiCycx2O1vCk/uBDygL6oBzB9LISE5RV+TYEHM4=
 ## Credits
 
 1. The udacity nano degree team provided the guidance and training i required to complete this project.
-
-
-## License
-MIT License
-
-Copyright (c) 2017 Clive Cadogan
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
 
 
 ## changelog
