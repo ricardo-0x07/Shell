@@ -8,10 +8,11 @@
 1. IP addreess: 35.163.150.155 ssh port: 2200
 2. The hosted application is publically available at: "http://35.163.150.155/catalog/#"
 3. Summary of software installed:
-
+	1. Remote login of the root user has been disabled.:
+		i. Run "sudo nano /etc/ssh/sshd_config" and change "PermitRootLogin without-password" to "PermitRootLogin no" 
 	2. Create a new user named grader and grant this user sudo permissions.:
 		i. Run "sudo adduser grader" to create grader.
-		ii. Run "sudo nano /etc/sudoers.d/grader " to create sudoer file for grader and insert the following "grader ALL=(ALL) NOPASSWD:ALL "
+		ii. Run "sudo visudo /etc/sudoers.d/grader " to create sudoer file for grader and insert the following "grader ALL=(ALL) ALL "
 
 	3. Update all currently installed packages.:
 		i. Run "sudo apt-get update"
@@ -61,7 +62,7 @@
 		ii. Run "cd /var/www" and run "git clone --depth 1 https://github.com/ricardo-0x07/catalog.git"
 		iii. Run "sudo sh /var/www/catalog/pg_config.sh" to install project dependencies.
 		iii. Run "sudo nano /var/www/html/myapp.wsgi" to insert the following and save and exit:
-		
+
 				import sys
 				import site
 				import logging
@@ -75,34 +76,35 @@
 				from application import app as application
 				application.secret_key = 'super_secret_key'
  
-4. Contents of the ~/.ssh/udacity_key.rsa:
+4. Contents of the ~/.ssh/grader_key:
 -----BEGIN RSA PRIVATE KEY-----
-MIIEogIBAAKCAQEApxXPENf9zhCX4OMZ5EF6baRcASTqVWHJ+82JhsaHGM1Nw0Q4
-+gHgbYUTLPGxA2/9LT4mAtukCu/JJ18iF1qqzkM7BfSRWVNfzPcycLfjaR97yFPv
-IUYYyn2DSJ+wtdoEbD4P178CmVFLJGFi89z3qMn3KF/fk4dGh4K2mMuBiyzyJ9Wp
-qwT40dKlwCrVjyLiwAJfkF2ISs3bwGpAexgDLOLZEVlR3xcx2sHFudJYvU+9BMI/
-fUCT5dHXjD6bzjwWmAfjGjm7lnT1BpQYKj1rwqCM5uzp/DlAEmnYEgbjOo7ECZfC
-1Dnj5zBrBnlsh53sTlyEftsIiTqz8e9HGawscQIDAQABAoIBAHzKuSDncVTa59S7
-SbdFgF8rhtwD6lFi/CzpUnIrDPPlQtM4vSVdCXZDEhNbYM4kcn+8Dz/LNDZG6YJS
-d2/h8/iiFg9YnsaMktzPNAkkDuGQ9i6lIdFEPXffTpKLUrw/3VXK9KI6s4I3SVwe
-sH1a6E5Uqhipop7ZRkAnzKFKPbLn5eOODl1DI/A3S2HzXe2II6c9OHDklMMZZfXT
-1oInyGEhrLNbu9KJB2GOu6F8qoYQ7mV+SnPgLOkCJeJm4oDHtLG0exFp7gfbjvvL
-iW4fIf7g+v3LmqHiHDu8qJ0omOqvxM0H6Hbj2rIqCbKGZo8UEKRo8Go5s0lzHfBs
-9wgPF5ECgYEA0yGTzaEIVdnc0dqZyRJIglwNt/MrwdDQEqIXelS5TbK9FnYuFg2H
-LMl8e/Pzu28jsYySw5O2aRtGu1RtQQDv95KUCTkj+HhMEUePaIg2In3JV45/fWUq
-g/mv9ss/OzCcqglU5uD9sCQUmHTH2I4uoQC6CkihNDoj2mMyrnlUaosCgYEAypfy
-D1wXMuxv8Nf+9sST09ohDIryW44lp2YyEvVSNNA5JMIT/uMhjSO7awjqyjpCR8+7
-li05Pm3Uhl0ytl8JW3PHgbuR58K1ms0K5JgWpBf+Qax98ukfmzNPmo6M9ulek0Vg
-rvpjYJq6m3ZkcJHYZgQM2iKXeyF4giJ1rgBa8HMCgYAMzJtOOvXrZnK5khwCkYYt
-yPDX9vjvHf6PMp5jvyEgsbY+11lB4v4P3AMc7JQZB8rNJ616B8lmI84s6xhYeXsS
-siMhUAJ7PKe34HO0LZXCj4eWNEBMVMa4C3n8ZyPlLbRBpqEsAfW/KODKwUGgQjZX
-cljU6MRFC0VDJwJai2ZvswKBgEeBJ5tKOpnrn3rXEZNRQIfGdmGx7OZpnlqeFFBi
-q7geQfz6TwpoaiAhm3WkuRHVTC2CYUgZABpLs3YVEOATXP8dNy5P4Kh3LZfMhOq3
-z03tdf0B/5Yrt88UZiU76P8A0TOTihNYJpkjI3fZaovcvg8LoOmgyexYnOr5dKWM
-VIyHAoGAfF+Ob7C1+j55yos9Oce9QpDHEvQ7pFgpclxDxVQfdE6iblYnGw0svwGJ
-LKta8f5LvAZe1p3AZVQSZ8F/pJEUPMKnf8ig4IXcVSedarRROvNpRx5uxaU9Rf43
-Tf7+hQHslnnTKiCycx2O1vCk/uBDygL6oBzB9LISE5RV+TYEHM4=
+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
 -----END RSA PRIVATE KEY-----
+
 
 ## History
 
